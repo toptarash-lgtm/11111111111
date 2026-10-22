@@ -63,10 +63,16 @@ async function init() {
 // در دیپلوی‌های بعدی چیزی را بازنویسی نمی‌کند، پس امن است که هر بار موقع استارت اجرا شود.
 function initIfNeeded() {
   const data = loadData();
-  if (data.admin && data.admin.passHash) {
+  const forceReset = process.env.FORCE_RESET_ADMIN === 'true';
+
+  if (data.admin && data.admin.passHash && !forceReset) {
     console.log('✓ ادمین از قبل ساخته شده، این مرحله رد شد.');
     ensureSecret();
     return;
+  }
+
+  if (forceReset) {
+    console.log('⚠ FORCE_RESET_ADMIN فعال است؛ رمز ادمین بازنویسی می‌شود.');
   }
 
   const user = process.env.ADMIN_USERNAME || 'admin';
